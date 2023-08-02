@@ -1,0 +1,13 @@
+* {
+    font-family: "Montserrat", sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #fa658d;
+}
+
+body, textarea {
+    background-color: #0d1117;
+    color: white;
+}

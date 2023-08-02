@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Books {
+  id Int @id @default(autoincrement())
+  title String
+  thumbname String
+  color String @default("fff")
+
+  Notes Notes[]
+}
+
+model Notes {
+  id Int @id @default(autoincrement())
+  title String
+  contents String @db.LongText
+  bookID Int 
+
+  Books Books @relation(fields: [bookID], references: [id], onDelete: Cascade)
+}
