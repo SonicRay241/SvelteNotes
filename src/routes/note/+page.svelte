@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import '$lib/css/editor.css'
 	import '$lib/css/shades-of-purple.css'
 	import MarkdownIt from 'markdown-it';
@@ -9,6 +9,7 @@
 	
 	let markdown = '';
 	let result = '';
+	let searchHeaders: string[] = []
 
 	let anchors = ""
 	
@@ -26,8 +27,24 @@
 				innerCode.slice(0,-1)
 			}
 			innerCode = innerCode.replaceAll("&quot;", '"')
+			innerCode = innerCode.replaceAll("&lt;", '<')
+			innerCode = innerCode.replaceAll("&gt;", '>')
 			let outputCode = hljs.highlightAuto(innerCode).value.toString()
 			result = result.replace(code.toString(), outputCode)
+		}
+		const reId = result.matchAll(new RegExp(/<h[1-6]>\[\?\s?[\S]+?\][\s\S]*?<\/h[1-6]>/g))
+		for (let header of reId) {
+			let innerHead = header.toString().slice(4).slice(0, -5)
+			const idTag = innerHead.match(new RegExp(/\[\?\s?[\S]+?\]/g))?.toString().slice(2).slice(0, -1)
+			const headerContent = innerHead.replace(new RegExp(/\[\?\s?[\S]*?\]/g), "")
+			const headerLvl = header.toString()[2]
+
+			const output = `<h${headerLvl} id="${idTag}">${headerContent}</h${headerLvl}>`
+			console.log(innerHead);
+			
+			result = result.replace(header.toString(), output)
+
+			// searchHeaders.push(idTag?.toString() ?? "")
 		}
 
 		result = result.replaceAll("<pre>", "<pre class='hljs'>")
@@ -38,7 +55,6 @@
 			b += anchor.toString().slice(0, -1)
 			b += ' target="_blank">'
 			anchors += b
-			console.log(1);
 			result = result.replace(anchor.toString(), b)
 		}
 	});
@@ -56,4 +72,6 @@
 			{@html result}
 		</div>
 	</div>
+
+	<a href="#{searchHeaders[0]}">Moai</a>
 </div>
